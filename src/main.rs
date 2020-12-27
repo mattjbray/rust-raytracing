@@ -62,7 +62,7 @@ impl Vec3 {
     }
 
     fn length_squared(&self) -> f64 {
-        self.x * self.x + self.y * self.y + self.z * self.z
+        self.dot(self)
     }
 
     fn length(&self) -> f64 {
@@ -71,6 +71,10 @@ impl Vec3 {
 
     fn unit(self) -> Self {
         self / self.length()
+    }
+
+    fn dot(&self, other: &Self) -> f64 {
+        self.x * other.x + self.y * other.y + self.z * other.z
     }
 }
 
@@ -183,8 +187,27 @@ impl Ray {
     }
 
     fn color(&self) -> Color {
-        let unit_direction = self.direction.unit();
-        let t = 0.5 * (unit_direction.y + 1.0);
-        (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
+        let t = self.hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5);
+        if t > 0.0 {
+            let n = self.at(t) - Vec3::new(0.0, 0.0, -1.0);
+            0.5 * Color::new(n.x + 1.0, n.y + 1.0, n.z + 1.)
+        } else {
+            let unit_direction = self.direction.unit();
+            let t = 0.5 * (unit_direction.y + 1.0);
+            (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
+        }
+    }
+
+    fn hit_sphere(&self, center: Point3, radius: f64) -> f64 {
+        let oc = self.origin - center;
+        let a = self.direction.length_squared();
+        let half_b = oc.dot(&self.direction);
+        let c = oc.length_squared() - radius * radius;
+        let discriminant = half_b * half_b - a * c;
+        if discriminant < 0.0 {
+            -1.0
+        } else {
+            (-half_b - discriminant.sqrt()) / a
+        }
     }
 }
