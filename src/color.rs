@@ -12,7 +12,8 @@ fn clamp(v: f64, min: f64, max: f64) -> f64 {
 
 impl Color {
     pub fn write(&self) {
-        let normalize = |v| (256.0 * clamp(v, 0.0, 0.999)) as u8;
+        // gamma-correct for gamma=2.0
+        let normalize = |v: f64| (256.0 * clamp(v.sqrt(), 0.0, 0.999)) as u8;
 
         println!(
             "{} {} {}",

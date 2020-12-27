@@ -3,7 +3,7 @@ image.png: image.ppm
 
 
 clean:
-	rm image.png image.ppm
+	rm -f image.png image.ppm
 
 image.ppm: src/main.rs
-	cargo run > $@
+	cargo run --release > $@

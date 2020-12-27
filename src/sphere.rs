@@ -1,14 +1,20 @@
-use super::ray::{HitRecord, Hittable, Ray};
+use super::ray::{HitRecord, Hittable, Material, Ray};
 use super::vec3::Point3;
+use std::rc::Rc;
 
 pub struct Sphere {
     center: Point3,
     radius: f64,
+    material: Rc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Point3, radius: f64) -> Self {
-        Self { center, radius }
+    pub fn new(center: Point3, radius: f64, material: Rc<dyn Material>) -> Self {
+        Self {
+            center,
+            radius,
+            material,
+        }
     }
 }
 
@@ -37,7 +43,7 @@ impl Hittable for Sphere {
         let t = root;
         let p = ray.at(root);
         let outward_normal = (p - self.center) / self.radius;
-        let hit_record = HitRecord::new(t, p, &outward_normal, ray);
+        let hit_record = HitRecord::new(t, p, &outward_normal, ray, self.material.clone());
         return Some(hit_record);
     }
 }

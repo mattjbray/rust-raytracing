@@ -12,6 +12,26 @@ impl Vec3 {
         Vec3 { x, y, z }
     }
 
+    pub fn gen_range<R>(rng: &mut impl rand::Rng, range: R) -> Self
+    where
+        R: rand::distributions::uniform::SampleRange<f64> + Clone,
+    {
+        Self {
+            x: rng.gen_range(range.clone()),
+            y: rng.gen_range(range.clone()),
+            z: rng.gen_range(range),
+        }
+    }
+
+    pub fn gen_in_unit_sphere(rng: &mut impl rand::Rng) -> Self {
+        loop {
+            let p = Self::gen_range(rng, (0.)..1.);
+            if p.length_squared() < 1. {
+                return p;
+            }
+        }
+    }
+
     pub fn length_squared(&self) -> f64 {
         self.dot(self)
     }
@@ -26,6 +46,16 @@ impl Vec3 {
 
     pub fn dot(&self, other: &Self) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
+    }
+
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+
+        self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
+    }
+
+    pub fn reflect(&self, n: &Self) -> Self {
+        return *self - 2.0 * self.dot(n) * *n;
     }
 }
 
@@ -90,6 +120,18 @@ impl std::ops::MulAssign<f64> for Vec3 {
             x: self.x * t,
             y: self.y * t,
             z: self.z * t,
+        }
+    }
+}
+
+impl std::ops::Mul for Vec3 {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Self::Output {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
+            z: self.z * rhs.z,
         }
     }
 }
