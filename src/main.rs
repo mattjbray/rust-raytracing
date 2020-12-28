@@ -1,6 +1,5 @@
 use rand::Rng;
 use std::io::Write;
-use std::rc::Rc;
 
 mod camera;
 mod color;
@@ -36,32 +35,23 @@ fn main() {
     );
     print!("{}", header);
 
-    let material_ground = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
-    let material_center = Rc::new(Dielectric::new(1.5));
-    let material_left = Rc::new(Dielectric::new(1.5));
-    let material_right = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 1.0));
+    let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
+    let material_center = Dielectric::new(1.5);
+    let material_left = Dielectric::new(1.5);
+    let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 1.0);
 
     let mut scene = Scene::new();
-    scene.add(Box::new(Sphere::new(
-        Point3::new(0.0, -100.5, -1.0),
-        100.0,
-        material_ground,
-    )));
-    scene.add(Box::new(Sphere::new(
-        Point3::new(0.0, 0.0, -1.0),
-        0.5,
-        material_center,
-    )));
-    scene.add(Box::new(Sphere::new(
-        Point3::new(-1.0, 0.0, -1.0),
-        0.5,
-        material_left,
-    )));
-    scene.add(Box::new(Sphere::new(
-        Point3::new(1.0, 0.0, -1.0),
-        0.5,
-        material_right,
-    )));
+    let ground = Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, &material_ground);
+    scene.add(&ground);
+
+    let center = Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5, &material_center);
+    scene.add(&center);
+
+    let left = Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, &material_left);
+    scene.add(&left);
+
+    let right = Sphere::new(Point3::new(1.0, 0.0, -1.0), 0.5, &material_right);
+    scene.add(&right);
 
     let mut rng = rand::thread_rng();
 

@@ -1,22 +1,22 @@
 use super::ray::{Hit, Hittable, Ray};
 
-pub struct Scene {
-    objects: Vec<Box<dyn Hittable>>,
+pub struct Scene<'a> {
+    objects: Vec<&'a (dyn Hittable)>,
 }
 
-impl Scene {
+impl<'a> Scene<'a> {
     pub fn new() -> Self {
         Self {
             objects: Vec::new(),
         }
     }
 
-    pub fn add(&mut self, o: Box<dyn Hittable>) {
+    pub fn add(&mut self, o: &'a (dyn Hittable)) {
         self.objects.push(o)
     }
 }
 
-impl Hittable for Scene {
+impl<'a> Hittable for Scene<'a> {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hit> {
         let mut hit_record = None;
         let mut closest_so_far = t_max;

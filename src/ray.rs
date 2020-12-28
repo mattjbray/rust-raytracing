@@ -1,6 +1,5 @@
 use super::color::Color;
 use super::vec3::{Point3, Vec3};
-use std::rc::Rc;
 
 pub struct Ray {
     origin: Point3,
@@ -48,21 +47,21 @@ impl Ray {
     }
 }
 
-pub struct Hit {
+pub struct Hit<'a> {
     p: Point3,
     normal: Vec3,
     t: f64,
     front_face: bool,
-    material: Rc<dyn Material>,
+    material: &'a (dyn Material),
 }
 
-impl Hit {
-    pub fn new<'a>(
+impl<'a> Hit<'a> {
+    pub fn new(
         t: f64,
         p: Point3,
         outward_normal: &Vec3,
         r: &Ray,
-        material: Rc<dyn Material>,
+        material: &'a dyn Material,
     ) -> Self {
         let front_face = r.direction.dot(outward_normal) < 0.0;
         let normal = if front_face {
@@ -114,10 +113,5 @@ impl Scatter {
 }
 
 pub trait Material {
-    fn scatter(
-        &self,
-        r_in: &Ray,
-        hit: &Hit,
-        rng: &mut rand::rngs::ThreadRng,
-    ) -> Option<Scatter>;
+    fn scatter(&self, r_in: &Ray, hit: &Hit, rng: &mut rand::rngs::ThreadRng) -> Option<Scatter>;
 }

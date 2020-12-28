@@ -1,15 +1,14 @@
 use super::ray::{Hit, Hittable, Material, Ray};
 use super::vec3::Point3;
-use std::rc::Rc;
 
-pub struct Sphere {
+pub struct Sphere<'a> {
     center: Point3,
     radius: f64,
-    material: Rc<dyn Material>,
+    material: &'a (dyn Material),
 }
 
-impl Sphere {
-    pub fn new(center: Point3, radius: f64, material: Rc<dyn Material>) -> Self {
+impl<'a> Sphere<'a> {
+    pub fn new(center: Point3, radius: f64, material: &'a (dyn Material)) -> Self {
         Self {
             center,
             radius,
@@ -18,7 +17,7 @@ impl Sphere {
     }
 }
 
-impl Hittable for Sphere {
+impl<'a> Hittable for Sphere<'a> {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hit> {
         let oc = ray.origin() - self.center;
         let a = ray.direction().length_squared();
