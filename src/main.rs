@@ -37,7 +37,7 @@ fn main() {
 
     let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
     let material_center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
-    let material_left = Dielectric::new(1.5);
+    let material_left = Dielectric::new(1.3);
     let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 0.0);
 
     let mut scene = Scene::new();
@@ -47,8 +47,10 @@ fn main() {
     let center = Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5, &material_center);
     scene.add(&center);
 
-    let left = Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, &material_left);
-    scene.add(&left);
+    let left_inner = Sphere::new(Point3::new(-1.0, 0.0, -1.0), -0.4, &material_left);
+    scene.add(&left_inner);
+    let left_outer = Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, &material_left);
+    scene.add(&left_outer);
 
     let right = Sphere::new(Point3::new(1.0, 0.0, -1.0), 0.5, &material_right);
     scene.add(&right);
