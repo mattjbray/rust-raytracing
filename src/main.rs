@@ -24,7 +24,7 @@ fn main() {
     let samples_per_pixel = 100;
     let max_depth = 50;
 
-    let camera = camera::Camera::new();
+    let camera = camera::Camera::new(90., aspect_ratio);
 
     let header = format!(
         "P3
