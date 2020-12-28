@@ -55,13 +55,13 @@ impl Vec3 {
     }
 
     pub fn reflect(&self, n: &Self) -> Self {
-        return *self - 2.0 * self.dot(n) * *n;
+        return self - 2.0 * self.dot(n) * n;
     }
 
     pub fn refract(&self, n: &Self, etai_over_etat: f64) -> Self {
-        let cos_theta = f64::min((-*self).dot(n), 1.0);
-        let r_out_perp = etai_over_etat * (*self + cos_theta * *n);
-        let r_out_parallel = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * *n;
+        let cos_theta = f64::min(-self.dot(n), 1.0);
+        let r_out_perp = etai_over_etat * (self + cos_theta * n);
+        let r_out_parallel = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * n;
         r_out_perp + r_out_parallel
     }
 }
@@ -89,24 +89,34 @@ impl std::ops::Add for Vec3 {
     }
 }
 
+impl std::ops::Add<Vec3> for &Vec3 {
+    type Output = Vec3;
+    fn add(self, rhs: Vec3) -> Self::Output {
+        *self + rhs
+    }
+}
+
 impl std::ops::AddAssign for Vec3 {
     fn add_assign(&mut self, rhs: Self) {
-        *self = Self {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-            z: self.z + rhs.z,
-        }
+        *self = *self + rhs
     }
 }
 
 impl std::ops::Sub for Vec3 {
     type Output = Self;
-    fn sub(self, rhs: Self) -> Self {
-        Vec3 {
+    fn sub(self, rhs: Self) -> Self::Output {
+        Self::Output {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
             z: self.z - rhs.z,
         }
+    }
+}
+
+impl std::ops::Sub<Vec3> for &Vec3 {
+    type Output = Vec3;
+    fn sub(self, rhs: Vec3) -> Self::Output {
+        *self - rhs
     }
 }
 
@@ -121,25 +131,34 @@ impl std::ops::Mul<Vec3> for f64 {
     }
 }
 
+impl std::ops::Mul<&Vec3> for f64 {
+    type Output = Vec3;
+    fn mul(self, rhs: &Vec3) -> Self::Output {
+        self * *rhs
+    }
+}
+
 impl std::ops::MulAssign<f64> for Vec3 {
     fn mul_assign(&mut self, t: f64) {
-        *self = Self {
-            x: self.x * t,
-            y: self.y * t,
-            z: self.z * t,
-        }
+        *self = t * *self
     }
 }
 
 impl std::ops::Mul for Vec3 {
     type Output = Self;
-
     fn mul(self, rhs: Self) -> Self::Output {
         Self::Output {
             x: self.x * rhs.x,
             y: self.y * rhs.y,
             z: self.z * rhs.z,
         }
+    }
+}
+
+impl std::ops::Mul for &Vec3 {
+    type Output = Vec3;
+    fn mul(self, rhs: Self) -> Self::Output {
+        *self * *rhs
     }
 }
 
