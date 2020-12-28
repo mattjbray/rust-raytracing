@@ -51,7 +51,6 @@ impl Material for Metal {
         hit: &HitRecord,
         rng: &mut rand::rngs::ThreadRng,
     ) -> Option<ScatterRecord> {
-        // vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
         let reflected = r_in.direction().unit().reflect(&hit.normal());
         let scattered = Ray::new(
             hit.position(),
@@ -63,5 +62,39 @@ impl Material for Metal {
         } else {
             None
         }
+    }
+}
+
+pub struct Dielectric {
+    index_of_refraction: f64,
+}
+
+impl Dielectric {
+    pub fn new(index_of_refraction: f64) -> Self {
+        Self {
+            index_of_refraction,
+        }
+    }
+}
+
+impl Material for Dielectric {
+    fn scatter(
+        &self,
+        r_in: &Ray,
+        hit: &HitRecord,
+        _rng: &mut rand::rngs::ThreadRng,
+    ) -> Option<ScatterRecord> {
+        let attenuation = Color::new(1.0, 1.0, 1.0);
+        let refraction_ratio = if hit.front_face() {
+            1.0 / self.index_of_refraction
+        } else {
+            self.index_of_refraction
+        };
+        let unit_direction = r_in.direction().unit();
+        let refracted = unit_direction.refract(&hit.normal(), refraction_ratio);
+
+        let scattered = Ray::new(hit.position(), refracted);
+
+        Some(ScatterRecord::new(scattered, attenuation))
     }
 }

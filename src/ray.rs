@@ -90,6 +90,9 @@ impl HitRecord {
     pub fn position(&self) -> Point3 {
         self.p
     }
+    pub fn front_face(&self) -> bool {
+        self.front_face
+    }
 }
 
 pub trait Hittable {

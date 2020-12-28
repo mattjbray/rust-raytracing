@@ -5,5 +5,5 @@ image.png: image.ppm
 clean:
 	rm -f image.png image.ppm
 
-image.ppm: src/main.rs
+image.ppm: src/*.rs
 	cargo run --release > $@
