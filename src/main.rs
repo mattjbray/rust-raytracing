@@ -13,7 +13,7 @@ use color::Color;
 use materials::{Dielectric, Lambertian, Metal};
 use scene::Scene;
 use sphere::Sphere;
-use vec3::Point3;
+use vec3::{Point3, Vec3};
 
 fn main() {
     // Image
@@ -24,7 +24,11 @@ fn main() {
     let samples_per_pixel = 100;
     let max_depth = 50;
 
-    let camera = camera::Camera::new(90., aspect_ratio);
+    let lookfrom = Point3::new(-1.5, 1.5, 1.0);
+    let lookat = Point3::new(0.0, 0.0, -1.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+
+    let camera = camera::Camera::new(lookfrom, lookat, vup, 90., aspect_ratio);
 
     let header = format!(
         "P3
