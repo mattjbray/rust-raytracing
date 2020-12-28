@@ -48,7 +48,7 @@ impl Ray {
     }
 }
 
-pub struct HitRecord {
+pub struct Hit {
     p: Point3,
     normal: Vec3,
     t: f64,
@@ -56,7 +56,7 @@ pub struct HitRecord {
     material: Rc<dyn Material>,
 }
 
-impl HitRecord {
+impl Hit {
     pub fn new<'a>(
         t: f64,
         p: Point3,
@@ -96,15 +96,15 @@ impl HitRecord {
 }
 
 pub trait Hittable {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hit>;
 }
 
-pub struct ScatterRecord {
+pub struct Scatter {
     scattered: Ray,
     attenuation: Color,
 }
 
-impl ScatterRecord {
+impl Scatter {
     pub fn new(scattered: Ray, attenuation: Color) -> Self {
         Self {
             scattered,
@@ -117,7 +117,7 @@ pub trait Material {
     fn scatter(
         &self,
         r_in: &Ray,
-        hit: &HitRecord,
+        hit: &Hit,
         rng: &mut rand::rngs::ThreadRng,
-    ) -> Option<ScatterRecord>;
+    ) -> Option<Scatter>;
 }

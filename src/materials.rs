@@ -1,5 +1,5 @@
 use super::color::Color;
-use super::ray::{HitRecord, Material, Ray, ScatterRecord};
+use super::ray::{Hit, Material, Ray, Scatter};
 use super::vec3::Vec3;
 
 pub struct Lambertian {
@@ -16,9 +16,9 @@ impl Material for Lambertian {
     fn scatter(
         &self,
         _r_in: &Ray,
-        hit: &HitRecord,
+        hit: &Hit,
         rng: &mut rand::rngs::ThreadRng,
-    ) -> Option<ScatterRecord> {
+    ) -> Option<Scatter> {
         let mut scatter_direction = hit.normal() + Vec3::gen_in_unit_sphere(rng);
         if scatter_direction.near_zero() {
             scatter_direction = hit.normal();
@@ -26,7 +26,7 @@ impl Material for Lambertian {
         let scattered = Ray::new(hit.position(), scatter_direction);
         let attenuation = self.albedo;
 
-        Some(ScatterRecord::new(scattered, attenuation))
+        Some(Scatter::new(scattered, attenuation))
     }
 }
 
@@ -48,9 +48,9 @@ impl Material for Metal {
     fn scatter(
         &self,
         r_in: &Ray,
-        hit: &HitRecord,
+        hit: &Hit,
         rng: &mut rand::rngs::ThreadRng,
-    ) -> Option<ScatterRecord> {
+    ) -> Option<Scatter> {
         let reflected = r_in.direction().unit().reflect(&hit.normal());
         let scattered = Ray::new(
             hit.position(),
@@ -58,7 +58,7 @@ impl Material for Metal {
         );
         let attenuation = self.albedo;
         if scattered.direction().dot(&hit.normal()) > 0. {
-            Some(ScatterRecord::new(scattered, attenuation))
+            Some(Scatter::new(scattered, attenuation))
         } else {
             None
         }
@@ -81,9 +81,9 @@ impl Material for Dielectric {
     fn scatter(
         &self,
         r_in: &Ray,
-        hit: &HitRecord,
+        hit: &Hit,
         _rng: &mut rand::rngs::ThreadRng,
-    ) -> Option<ScatterRecord> {
+    ) -> Option<Scatter> {
         let attenuation = Color::new(1.0, 1.0, 1.0);
         let refraction_ratio = if hit.front_face() {
             1.0 / self.index_of_refraction
@@ -95,6 +95,6 @@ impl Material for Dielectric {
 
         let scattered = Ray::new(hit.position(), refracted);
 
-        Some(ScatterRecord::new(scattered, attenuation))
+        Some(Scatter::new(scattered, attenuation))
     }
 }

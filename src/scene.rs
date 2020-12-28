@@ -1,4 +1,4 @@
-use super::ray::{HitRecord, Hittable, Ray};
+use super::ray::{Hit, Hittable, Ray};
 
 pub struct Scene {
     objects: Vec<Box<dyn Hittable>>,
@@ -17,7 +17,7 @@ impl Scene {
 }
 
 impl Hittable for Scene {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hit> {
         let mut hit_record = None;
         let mut closest_so_far = t_max;
 

@@ -1,4 +1,4 @@
-use super::ray::{HitRecord, Hittable, Material, Ray};
+use super::ray::{Hit, Hittable, Material, Ray};
 use super::vec3::Point3;
 use std::rc::Rc;
 
@@ -19,7 +19,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hit> {
         let oc = ray.origin() - self.center;
         let a = ray.direction().length_squared();
         let half_b = oc.dot(&ray.direction());
@@ -43,7 +43,7 @@ impl Hittable for Sphere {
         let t = root;
         let p = ray.at(root);
         let outward_normal = (p - self.center) / self.radius;
-        let hit_record = HitRecord::new(t, p, &outward_normal, ray, self.material.clone());
+        let hit_record = Hit::new(t, p, &outward_normal, ray, self.material.clone());
         return Some(hit_record);
     }
 }
