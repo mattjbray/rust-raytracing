@@ -33,15 +33,17 @@ impl Ray {
         }
         match scene.hit(self, 0.001, std::f64::INFINITY) {
             Some(hit) => match hit.material.scatter(self, &hit, rng) {
-                Some(scatter) => {
-                    scatter.attenuation * scatter.scattered.color(scene, rng, depth - 1)
-                }
+                Some(scatter) => match scatter.scattered {
+                    Some(scattered) => scatter.attenuation * scattered.color(scene, rng, depth - 1),
+                    None => scatter.attenuation,
+                },
                 None => Color::new(0., 0., 0.),
             },
             None => {
                 // background
-                let t = 0.5 * (self.direction.unit().y + 1.0);
-                (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
+                // let t = 0.5 * (self.direction.unit().y + 1.0);
+                // (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
+                Color::new(0.0, 0.0, 0.0)
             }
         }
     }
@@ -99,12 +101,12 @@ pub trait Hittable {
 }
 
 pub struct Scatter {
-    scattered: Ray,
+    scattered: Option<Ray>,
     attenuation: Color,
 }
 
 impl Scatter {
-    pub fn new(scattered: Ray, attenuation: Color) -> Self {
+    pub fn new(scattered: Option<Ray>, attenuation: Color) -> Self {
         Self {
             scattered,
             attenuation,

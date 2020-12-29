@@ -22,7 +22,7 @@ impl Material for Lambertian {
         let scattered = Ray::new(hit.position(), scatter_direction);
         let attenuation = self.albedo;
 
-        Some(Scatter::new(scattered, attenuation))
+        Some(Scatter::new(Some(scattered), attenuation))
     }
 }
 
@@ -49,7 +49,7 @@ impl Material for Metal {
         );
         let attenuation = self.albedo;
         if scattered.direction().dot(&hit.normal()) > 0. {
-            Some(Scatter::new(scattered, attenuation))
+            Some(Scatter::new(Some(scattered), attenuation))
         } else {
             None
         }
@@ -98,6 +98,27 @@ impl Material for Dielectric {
 
         let scattered = Ray::new(hit.position(), direction);
 
-        Some(Scatter::new(scattered, attenuation))
+        Some(Scatter::new(Some(scattered), attenuation))
+    }
+}
+
+pub struct Light {
+    color: Color,
+}
+
+impl Light {
+    pub fn new(color: Color) -> Self {
+        Self { color }
+    }
+}
+
+impl Material for Light {
+    fn scatter(
+        &self,
+        _r_in: &Ray,
+        _hit: &Hit,
+        _rng: &mut rand::rngs::ThreadRng,
+    ) -> Option<Scatter> {
+        Some(Scatter::new(None, self.color))
     }
 }

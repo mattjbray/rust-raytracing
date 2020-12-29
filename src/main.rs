@@ -10,7 +10,7 @@ mod sphere;
 mod vec3;
 
 use color::Color;
-use materials::{Dielectric, Lambertian, Metal};
+use materials::{Dielectric, Lambertian, Light, Metal};
 use scene::Scene;
 use sphere::Sphere;
 use vec3::{Point3, Vec3};
@@ -53,8 +53,13 @@ fn main() {
     let material_center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
     let material_left = Dielectric::new(1.3);
     let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 0.0);
+    let material_light = Light::new(Color::new(1.0, 1.0, 1.0));
 
     let mut scene = Scene::new();
+
+    let light = Sphere::new(Point3::new(1.5, 0.5, 0.5), 0.5, &material_light);
+    scene.add(&light);
+
     let ground = Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, &material_ground);
     scene.add(&ground);
 
