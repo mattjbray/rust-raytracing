@@ -32,6 +32,15 @@ impl Vec3 {
         }
     }
 
+    pub fn gen_in_unit_disk(rng: &mut impl rand::Rng) -> Self {
+        loop {
+            let p = Self::new(rng.gen_range((-1.)..(1.)), rng.gen_range((-1.)..(1.)), 0.);
+            if p.length_squared() < 1. {
+                return p;
+            };
+        }
+    }
+
     pub fn length_squared(&self) -> f64 {
         self.dot(self)
     }

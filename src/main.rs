@@ -27,8 +27,18 @@ fn main() {
     let lookfrom = Point3::new(-1.5, 1.5, 1.0);
     let lookat = Point3::new(0.0, 0.0, -1.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
+    let aperture = 0.1;
+    let focus_dist = (lookfrom - lookat).length();
 
-    let camera = camera::Camera::new(lookfrom, lookat, vup, 90., aspect_ratio);
+    let camera = camera::Camera::new(
+        lookfrom,
+        lookat,
+        vup,
+        60.,
+        aspect_ratio,
+        aperture,
+        focus_dist,
+    );
 
     let header = format!(
         "P3
@@ -51,12 +61,14 @@ fn main() {
     let center = Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5, &material_center);
     scene.add(&center);
 
-    let left_inner = Sphere::new(Point3::new(-1.0, 0.0, -1.0), -0.4, &material_left);
+    let left_inner = Sphere::new(Point3::new(-1.1, 0.0, -1.0), -0.4, &material_left);
     scene.add(&left_inner);
-    let left_outer = Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, &material_left);
+    let left_outer = Sphere::new(Point3::new(-1.1, 0.0, -1.0), 0.5, &material_left);
     scene.add(&left_outer);
+    let left_center = Sphere::new(Point3::new(-1.1, 0.0, -1.0), 0.35, &material_right);
+    scene.add(&left_center);
 
-    let right = Sphere::new(Point3::new(1.0, 0.0, -1.0), 0.5, &material_right);
+    let right = Sphere::new(Point3::new(1.1, 0.0, -1.0), 0.5, &material_right);
     scene.add(&right);
 
     let mut rng = rand::thread_rng();
@@ -70,7 +82,7 @@ fn main() {
             for _ in 0..samples_per_pixel {
                 let u = (i as f64 + rng.gen_range((0.)..1.)) / (image_width - 1) as f64;
                 let v = (j as f64 + rng.gen_range((0.)..1.)) / (image_height - 1) as f64;
-                let r = camera.ray_to(u, v);
+                let r = camera.ray_to(u, v, &mut rng);
                 pixel_color += r.color(&scene, &mut rng, max_depth);
             }
 
